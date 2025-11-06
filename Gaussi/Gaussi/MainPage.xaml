@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gaussi.MainPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="HorizontalStackLayout">
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="FontSize" Value="30"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="HeightRequest" Value="100"/>
+                <Setter Property="FontSize" Value="50"/>
+                <Setter Property="VerticalOptions" Value="Start"/>
+                <Setter Property="Margin" Value="20"/>
+                <Setter Property="TextColor" Value="White"/>
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Keyboard" Value="Numeric"/>
+                <Setter Property="WidthRequest" Value="45"/>
+                <Setter Property="HeightRequest" Value="40"/>
+                <Setter Property="IsSpellCheckEnabled" Value="False"/>
+                <Setter Property="MaxLength" Value="6"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ScrollView>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition Height="0.75*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <HorizontalStackLayout>
+                <Entry x:Name="AOneOneEntry" Placeholder="A11" Text="2.2"/>
+                <Entry x:Name="AOneTwoEntry" Placeholder="A12" Text="-3.1"/>
+                <Entry x:Name="AOneThreeEntry" Placeholder="A13" Text="4.2"/>
+                <Entry x:Name="AOneFourEntry" Placeholder="A14" Text="-5.1"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="1">
+                <Entry x:Name="ATwoOneEntry" Placeholder="A21" Text="1.3"/>
+                <Entry x:Name="ATwoTwoEntry" Placeholder="A22" Text="2.2"/>
+                <Entry x:Name="ATwoThreeEntry" Placeholder="A23" Text="-1.4"/>
+                <Entry x:Name="ATwoFourEntry" Placeholder="A24" Text="1.5"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="2">
+                <Entry x:Name="AThreeOneEntry" Placeholder="A31" Text="6.2"/>
+                <Entry x:Name="AThreeTwoEntry" Placeholder="A32" Text="-7.4"/>
+                <Entry x:Name="AThreeThreeEntry" Placeholder="A33" Text="8.5"/>
+                <Entry x:Name="AThreeFourEntry" Placeholder="A34" Text="-9.6"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="3">
+                <Entry x:Name="AFourOneEntry" Placeholder="A41" Text="1.2"/>
+                <Entry x:Name="AFourTwoEntry" Placeholder="A42" Text="1.3"/>
+                <Entry x:Name="AFourThreeEntry" Placeholder="A43" Text="1.4"/>
+                <Entry x:Name="AFourFourEntry" Placeholder="A44" Text="4.5"/>
+            </HorizontalStackLayout>
+
+            <Line Grid.Column="100" Grid.RowSpan="4" Y1="20" Y2="150" Stroke="White" VerticalOptions="Center"/>
+
+            <HorizontalStackLayout Grid.Column="1">
+                <Entry x:Name="BOne" Placeholder="B1" Text="6"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                <Entry x:Name="BTwo" Placeholder="B2" Text="10"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                <Entry x:Name="BThree" Placeholder="B3" Text="1.1"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="3" Grid.Column="1">
+                <Entry x:Name="BFour" Placeholder="B4" Text="1.6"/>
+            </HorizontalStackLayout>
+
+            <Button x:Name="CalculateButton" Text="вычислить" Grid.Row="4" Grid.ColumnSpan="4" Clicked="CalculateButton_Clicked"/>
+
+            <VerticalStackLayout Grid.ColumnSpan="2" Grid.Row="5" HorizontalOptions="Center">
+                <Label x:Name="XOne" Text="X1= "/>
+                <Label x:Name="XTwo" Text="X2= "/>
+                <Label x:Name="XThree" Text="X3= "/>
+                <Label x:Name="XFour" Text="X4= "/>
+            </VerticalStackLayout>
+
+        </Grid>
+    </ScrollView>
+
+</ContentPage>
