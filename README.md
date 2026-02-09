@@ -1,101 +1,106 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Collections.Generic;
-using System.Linq; // Не забудьте этот using для фильтрации
+@page
+@model IndexModel
+@{ ViewData["Title"] = "Календарь событий"; }
 
-namespace SimpleCalendar.Pages
-{
-    public enum CalendarViewType { Month, Week }
+<div class="calendar-container">
+     <div class="calendar-grid-header">
+        <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div class="weekend">Сб</div><div class="weekend">Вс</div>
+    </div>
 
-    public class IndexModel : PageModel
-    {
-        // 1. Модель События
-        public class CalendarEvent
+    <div class="calendar-grid">
+        @foreach (var day in Model.Days)
         {
-            public string Title { get; set; }
-            public string Description { get; set; } // Это покажем при наведении
-            public DateTime Date { get; set; }
-            public string Color { get; set; } = "#3788d8"; // Цвет плашки
+            <div class="day-cell @(day.IsToday ? "today" : "") @(day.IsCurrentMonth ? "" : "other-month")">
+                <div class="day-number">@day.Date.Day</div>
+                
+                <div class="events-list">
+                    @foreach (var evt in day.Events)
+                    {
+                        <div class="event-item" style="background-color: @evt.Color;">
+                            @evt.Title
+                            
+                            <div class="event-tooltip">
+                                <strong>@evt.Title</strong><br/>
+                                <small>@evt.Date.ToShortDateString()</small>
+                                <hr style="margin: 5px 0; border-color: #ffffff50;" />
+                                @evt.Description
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
         }
+    </div>
+</div>
 
-        public class CalendarDay
-        {
-            public DateTime Date { get; set; }
-            public bool IsToday { get; set; }
-            public bool IsCurrentMonth { get; set; }
-            // 2. Список событий для конкретного дня
-            public List<CalendarEvent> Events { get; set; } = new List<CalendarEvent>();
-        }
+<style>
+    /* ... (Старые стили контейнера и сетки оставляем) ... */
+    .calendar-container { max-width: 900px; margin: 0 auto; font-family: sans-serif; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+    .day-cell { border: 1px solid #eee; min-height: 120px; padding: 5px; background: #fff; position: relative; } /* min-height чтобы влезли события */
+    .day-number { font-weight: bold; margin-bottom: 5px; }
+    .day-cell.today { background-color: #eaf4ff; border: 2px solid #007bff; }
+    .day-cell.other-month { background-color: #fafafa; color: #ccc; }
 
-        public DateTime CurrentDate { get; set; }
-        public CalendarViewType ViewType { get; set; }
-        public List<CalendarDay> Days { get; set; } = new List<CalendarDay>();
-
-        public void OnGet(string view = "Month", string date = null)
-        {
-            // ... (парсинг ViewType и CurrentDate оставляем как было) ...
-            if (!Enum.TryParse(view, true, out CalendarViewType parsedView)) ViewType = CalendarViewType.Month;
-            else ViewType = parsedView;
-
-            if (!DateTime.TryParse(date, out DateTime parsedDate)) CurrentDate = DateTime.Today;
-            else CurrentDate = parsedDate;
-
-            // Получаем "базу данных" событий
-            var allEvents = GetMockEvents();
-
-            GenerateGrid(allEvents);
-        }
-
-        // Имитация базы данных
-        private List<CalendarEvent> GetMockEvents()
-        {
-            return new List<CalendarEvent>
-            {
-                new CalendarEvent { Title = "Сдача отчета", Description = "Нужно отправить отчет бухгалтеру до 18:00", Date = DateTime.Today, Color = "#d9534f" },
-                new CalendarEvent { Title = "Встреча с клиентом", Description = "Обсуждение проекта Razor Pages", Date = DateTime.Today.AddDays(2), Color = "#5cb85c" },
-                new CalendarEvent { Title = "День рождения", Description = "Купить подарок", Date = DateTime.Today.AddDays(-3), Color = "#f0ad4e" },
-                new CalendarEvent { Title = "Спортзал", Description = "День ног", Date = DateTime.Today.AddDays(5) }
-            };
-        }
-
-        private void GenerateGrid(List<CalendarEvent> allEvents)
-        {
-            Days.Clear();
-            DateTime startOfGrid, endOfGrid;
-
-            // ... (Логика определения startOfGrid и endOfGrid остается прежней) ...
-            if (ViewType == CalendarViewType.Month)
-            {
-                var firstDayOfMonth = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
-                int daysToSubtract = (int)firstDayOfMonth.DayOfWeek - (int)DayOfWeek.Monday;
-                if (daysToSubtract < 0) daysToSubtract += 7;
-                startOfGrid = firstDayOfMonth.AddDays(-daysToSubtract);
-                endOfGrid = startOfGrid.AddDays(42);
-            }
-            else
-            {
-                int daysToSubtract = (int)CurrentDate.DayOfWeek - (int)DayOfWeek.Monday;
-                if (daysToSubtract < 0) daysToSubtract += 7;
-                startOfGrid = CurrentDate.AddDays(-daysToSubtract);
-                endOfGrid = startOfGrid.AddDays(7);
-            }
-
-            for (var dt = startOfGrid; dt < endOfGrid; dt = dt.AddDays(1))
-            {
-                var day = new CalendarDay
-                {
-                    Date = dt,
-                    IsToday = dt.Date == DateTime.Today,
-                    IsCurrentMonth = ViewType == CalendarViewType.Week || dt.Month == CurrentDate.Month,
-                    // 3. Фильтруем события для этого дня
-                    Events = allEvents.Where(e => e.Date.Date == dt.Date).ToList()
-                };
-                Days.Add(day);
-            }
-        }
-        
-        // ... (GetNextDate и GetPrevDate оставляем как было) ...
-        public string GetNextDate() => ViewType == CalendarViewType.Month ? CurrentDate.AddMonths(1).ToString("yyyy-MM-dd") : CurrentDate.AddDays(7).ToString("yyyy-MM-dd");
-        public string GetPrevDate() => ViewType == CalendarViewType.Month ? CurrentDate.AddMonths(-1).ToString("yyyy-MM-dd") : CurrentDate.AddDays(-7).ToString("yyyy-MM-dd");
+    /* Стили для событий */
+    .events-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
-}
+
+    .event-item {
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.75em;
+        cursor: pointer;
+        white-space: nowrap;      /* Не переносить текст */
+        overflow: hidden;         /* Скрывать хвост */
+        text-overflow: ellipsis;  /* Добавлять троеточие ... */
+        position: relative;       /* Важно для позиционирования тултипа */
+    }
+
+    .event-item:hover {
+        opacity: 0.9;
+        /* z-index не поможет родительскому overflow, но выделит элемент */
+        z-index: 10; 
+        overflow: visible; /* Чтобы тултип не обрезался */
+    }
+
+    /* Стили всплывающей подсказки */
+    .event-tooltip {
+        display: none; /* Скрыто по умолчанию */
+        position: absolute;
+        bottom: 100%; /* Появляется над событием */
+        left: 50%;
+        transform: translateX(-50%); /* Центрируем */
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        width: 200px;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        white-space: normal; /* Текст внутри тултипа переносится нормально */
+        text-align: left;
+        pointer-events: none; /* Чтобы мышка не "спотыкалась" об тултип */
+    }
+
+    /* Стрелочка у тултипа */
+    .event-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
+    }
+
+    /* Показываем тултип при наведении на .event-item */
+    .event-item:hover .event-tooltip {
+        display: block;
+    }
+</style>
